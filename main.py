@@ -21,39 +21,6 @@ ua = UserAgent()
 
 base_url = 'https://ra.co/clubs'
 
-club_urls = [
-    'https://ra.co/clubs/ad/andorralavella',
-    'https://ra.co/clubs/ar/buenosaires',
-    'https://ra.co/clubs/au/canberra',
-    'https://ra.co/clubs/au/sydney',
-    'https://ra.co/clubs/au/darwin',
-    'https://ra.co/clubs/au/adelaide',
-    'https://ra.co/clubs/au/hobart',
-    'https://ra.co/clubs/au/melbourne',
-    'https://ra.co/clubs/au/perth',
-    'https://ra.co/clubs/at/vienna',
-    'https://ra.co/clubs/be/antwerp',
-    'https://ra.co/clubs/be/brussels',
-    'https://ra.co/clubs/be/ghent',
-    'https://ra.co/clubs/br/saopaulo',
-    'https://ra.co/clubs/br/riodejaneiro',
-    'https://ra.co/clubs/bg/sofia',
-    'https://ra.co/clubs/ca/edmonton',
-    'https://ra.co/clubs/ca/vancouver',
-    'https://ra.co/clubs/ca/calgary',
-    'https://ra.co/clubs/ca/winnipeg',
-    'https://ra.co/clubs/ca/moncton',
-    'https://ra.co/clubs/ca/stjohns',
-    'https://ra.co/clubs/ca/halifax',
-    'https://ra.co/clubs/ca/toronto',
-    'https://ra.co/clubs/ca/ottawa',
-    'https://ra.co/clubs/ca/windsor',
-    'https://ra.co/clubs/ca/charlottetown',
-    'https://ra.co/clubs/ca/montreal',
-    'https://ra.co/clubs/ca/quebeccity',
-    'https://ra.co/clubs/ca/regina',
-    'https://ra.co/clubs/cl/santiago'
-]
 
 
 session = AsyncHTMLSession(browser_args=["--no-sandbox", "--disable-popup-blocking", f'--user-agent={ua.random}'])
@@ -92,9 +59,38 @@ async def main():
         loop = asyncio.get_event_loop()
         club_urls = [
             'https://ra.co/clubs/ad/andorralavella',
-            'https://ra.co/clubs/ar/buenosaires'
-            # Add more club URLs as needed
-        ]
+            'https://ra.co/clubs/ar/buenosaires',
+            'https://ra.co/clubs/au/canberra',
+            'https://ra.co/clubs/au/sydney',
+            'https://ra.co/clubs/au/darwin',
+            'https://ra.co/clubs/au/adelaide',
+            'https://ra.co/clubs/au/hobart',
+            'https://ra.co/clubs/au/melbourne',
+            'https://ra.co/clubs/au/perth',
+            'https://ra.co/clubs/at/vienna',
+            'https://ra.co/clubs/be/antwerp',
+            'https://ra.co/clubs/be/brussels',
+            'https://ra.co/clubs/be/ghent',
+            'https://ra.co/clubs/br/saopaulo',
+            'https://ra.co/clubs/br/riodejaneiro',
+            'https://ra.co/clubs/bg/sofia',
+            'https://ra.co/clubs/ca/edmonton',
+            'https://ra.co/clubs/ca/vancouver',
+            'https://ra.co/clubs/ca/calgary',
+            'https://ra.co/clubs/ca/winnipeg',
+            'https://ra.co/clubs/ca/moncton',
+            'https://ra.co/clubs/ca/stjohns',
+            'https://ra.co/clubs/ca/halifax',
+            'https://ra.co/clubs/ca/toronto',
+            'https://ra.co/clubs/ca/ottawa',
+            'https://ra.co/clubs/ca/windsor',
+            'https://ra.co/clubs/ca/charlottetown',
+            'https://ra.co/clubs/ca/montreal',
+            'https://ra.co/clubs/ca/quebeccity',
+            'https://ra.co/clubs/ca/regina',
+            'https://ra.co/clubs/cl/santiago']
+
+        
 
         all_responses = await asyncio.gather(*[fetch_with_retry(url) for url in club_urls])
         for response, url in zip(all_responses, club_urls):
