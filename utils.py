@@ -23,7 +23,7 @@ def get_current_directory_path(filename):
 
 global_data_list = []  # List to collect data
 
-async def fetch_details_with_retry(url, max_retries=15, retry_delay=5):
+async def fetch_details_with_retry(url, max_retries=150, retry_delay=5):
     global user_agent_list
 
     for attempt in range(max_retries):
@@ -40,9 +40,6 @@ async def fetch_details_with_retry(url, max_retries=15, retry_delay=5):
             return response
         except Exception as e:
             print(f"Error fetching {url} (attempt {attempt + 1}): {e}")
-
-
-
 
             if attempt >= 2:
                 session = AsyncHTMLSession(browser_args=["--no-sandbox", f'--user-agent={ua.random}'])
@@ -139,7 +136,7 @@ async def parse_club_details(full_link_club, full_link_city, club_name, club_add
             'Images (Cover photo)': cover_photo_url
         }
 
-        print(club_name)
+        print(club_name, city_name)
         global_data_list.append(data)
 
     except (pyppeteer.errors.TimeoutError, pyppeteer.errors.NetworkError) as e:

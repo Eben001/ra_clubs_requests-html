@@ -26,10 +26,10 @@ base_url = 'https://ra.co/clubs'
 session = AsyncHTMLSession(browser_args=["--no-sandbox", "--disable-popup-blocking", f'--user-agent={ua.random}'])
 
 
-async def fetch_with_retry(url, max_retries=100):
+async def fetch_with_retry(url, max_retries=100, retry_delay=5):
     global user_agent_list
     for attempt in range(max_retries):
-        # user_agent_list = get_user_agent_list() 
+
         session = AsyncHTMLSession(browser_args=["--no-sandbox", f'--user-agent={ua.random}'])
 
         try:
@@ -41,11 +41,17 @@ async def fetch_with_retry(url, max_retries=100):
             response.raise_for_status()
             return response
         except Exception as e:
+            proxies={
+                "http": "http://ebojzbnm-rotate:v0vtpu32r7jw@p.webshare.io:80/",
+                "https": "http://ebojzbnm-rotate:v0vtpu32r7jw@p.webshare.io:80/"
+            }
             print(f"Error fetching {url} (attempt {attempt + 1}): {e}")
-
             if attempt >= 2:
+                await asyncio.sleep(retry_delay)
                 session = AsyncHTMLSession(browser_args=["--no-sandbox", f'--user-agent={ua.random}'])
-
+                response = await session.get(url, proxies=proxies)
+                response.raise_for_status()
+                return response
 
 
 
@@ -58,57 +64,57 @@ async def main():
     try:
         loop = asyncio.get_event_loop()
         club_urls = [
-            'https://ra.co/clubs/ad/andorralavella',
-            'https://ra.co/clubs/ar/buenosaires',
-            'https://ra.co/clubs/au/canberra',
-            'https://ra.co/clubs/au/sydney',
-            'https://ra.co/clubs/au/darwin',
-            'https://ra.co/clubs/au/adelaide',
+
             'https://ra.co/clubs/au/hobart',
-            'https://ra.co/clubs/au/melbourne',
-            'https://ra.co/clubs/au/perth',
-            'https://ra.co/clubs/at/vienna',
-            'https://ra.co/clubs/be/antwerp',
-            'https://ra.co/clubs/be/brussels',
-            'https://ra.co/clubs/be/ghent',
-            'https://ra.co/clubs/br/saopaulo',
-            'https://ra.co/clubs/br/riodejaneiro',
-            'https://ra.co/clubs/bg/sofia',
-            'https://ra.co/clubs/ca/edmonton',
-            'https://ra.co/clubs/ca/vancouver',
-            'https://ra.co/clubs/ca/calgary',
-            'https://ra.co/clubs/ca/winnipeg',
-            'https://ra.co/clubs/ca/moncton',
-            'https://ra.co/clubs/ca/stjohns',
-            'https://ra.co/clubs/ca/halifax',
-            'https://ra.co/clubs/ca/toronto',
-            'https://ra.co/clubs/ca/ottawa',
-            'https://ra.co/clubs/ca/windsor',
-            'https://ra.co/clubs/ca/charlottetown',
-            'https://ra.co/clubs/ca/montreal',
-            'https://ra.co/clubs/ca/quebeccity',
-            'https://ra.co/clubs/ca/regina',
-            'https://ra.co/clubs/cl/santiago']
+            # 'https://ra.co/clubs/au/melbourne',
+            # 'https://ra.co/clubs/au/perth',
+            # 'https://ra.co/clubs/at/vienna',
+            # 'https://ra.co/clubs/be/antwerp',
+            # 'https://ra.co/clubs/be/brussels',
+            # 'https://ra.co/clubs/be/ghent',
+            # 'https://ra.co/clubs/br/saopaulo',
+            # 'https://ra.co/clubs/br/riodejaneiro',
+            # 'https://ra.co/clubs/bg/sofia',
+            # 'https://ra.co/clubs/ca/edmonton',
+            # 'https://ra.co/clubs/ca/vancouver',
+            # 'https://ra.co/clubs/ca/calgary',
+            # 'https://ra.co/clubs/ca/winnipeg',
+            # 'https://ra.co/clubs/ca/moncton',
+            # 'https://ra.co/clubs/ca/stjohns',
+            # 'https://ra.co/clubs/ca/halifax',
+            # 'https://ra.co/clubs/ca/toronto',
+            # 'https://ra.co/clubs/ca/ottawa',
+            # 'https://ra.co/clubs/ca/windsor',
+            # 'https://ra.co/clubs/ca/charlottetown',
+            # 'https://ra.co/clubs/ca/montreal',
+            # 'https://ra.co/clubs/ca/quebeccity',
+            # 'https://ra.co/clubs/ca/regina',
+            # 'https://ra.co/clubs/cl/santiago'
+            ]
 
         
 
         all_responses = await asyncio.gather(*[fetch_with_retry(url) for url in club_urls])
         for response, url in zip(all_responses, club_urls):
-             if response:
+            if response:
                 print(f"Currently scraping: {url}")
                 clubs = response.html.xpath('//div[@class="Box-sc-abq4qd-0 jqLKOp"]')
+                # clubs = clubs[733:]
                 for club in clubs:
                   link = club.xpath('.//li[@class="Column-sc-4kt5ql-0 kMrINt"]/a/@href')
                   club_name = club.xpath('.//li[@class="Column-sc-4kt5ql-0 kMrINt"]/a/span/span/text()')
                   club_address = club.xpath('.//li[@class="Column-sc-4kt5ql-0 eSwkYt"]/span/text()')
 
-                  if link[0] and club_name[0] and club_address[0]:
+                  if link[0] and club_name[0]:
                       full_link_club = urljoin(base_url, link[0])
-                  else:
-                    continue
-
-                  await parse_club_details(full_link_club, url, club_name[0], club_address[0])
+                      
+                      if not club_address:
+                          club_address = ""
+                      
+                      await parse_club_details(full_link_club, url, club_name[0], club_address) 
                   
+
+             
 
     except KeyboardInterrupt:
         print("Received KeyboardInterrupt. Stopping gracefully.")
