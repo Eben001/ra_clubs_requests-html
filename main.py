@@ -99,7 +99,7 @@ async def main():
             if response:
                 print(f"Currently scraping: {url}")
                 clubs = response.html.xpath('//div[@class="Box-sc-abq4qd-0 jqLKOp"]')
-                # clubs = clubs[733:]
+                clubs = clubs[30:]
                 for club in clubs:
                   link = club.xpath('.//li[@class="Column-sc-4kt5ql-0 kMrINt"]/a/@href')
                   club_name = club.xpath('.//li[@class="Column-sc-4kt5ql-0 kMrINt"]/a/span/span/text()')
@@ -110,10 +110,10 @@ async def main():
                       
                       if not club_address:
                           club_address = ""
-                      
-                      await parse_club_details(full_link_club, url, club_name[0], club_address) 
-                  
-
+                    #   print(club_name)
+                      await parse_club_details(full_link_club, url, club_name[0], club_address[0]) 
+                      break
+                         
              
 
     except KeyboardInterrupt:
